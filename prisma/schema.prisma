@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Lead Management Models
+model Lead {
+  id          String   @id @default(cuid())
+  type        String   // "quote", "demo", "contact"
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  company     String?
+  industry    String?
+  message     String?
+  metadata    Json?    // Additional form data
+  status      String   @default("new") // "new", "contacted", "qualified", "closed"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Download {
+  id          String   @id @default(cuid())
+  resourceSlug String
+  resourceType String  // "datasheet", "whitepaper", "video"
+  email       String?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([resourceSlug])
+  @@index([createdAt])
+}
+
+model Newsletter {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  subscribed  Boolean  @default(true)
+  source      String?  // Where they subscribed from
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([email])
+}
+
+// Analytics Models
+model PageView {
+  id          String   @id @default(cuid())
+  path        String
+  referrer    String?
+  userAgent   String?
+  ipAddress   String?
+  country     String?
+  createdAt   DateTime @default(now())
+
+  @@index([path])
+  @@index([createdAt])
+}
+
+model FormSubmission {
+  id          String   @id @default(cuid())
+  formType    String   // "contact", "quote", "demo", "download"
+  formData    Json
+  success     Boolean  @default(true)
+  errorMessage String?
+  createdAt   DateTime @default(now())
+
+  @@index([formType])
+  @@index([createdAt])
+}
+
