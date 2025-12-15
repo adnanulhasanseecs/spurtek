@@ -50,11 +50,30 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        // Siemens-specific colors
+        siemens: {
+          blue: 'hsl(var(--siemens-blue))',
+          'blue-light': 'hsl(var(--siemens-blue-light))',
+          'electric-blue': 'hsl(var(--electric-blue))',
+          white: 'hsl(var(--polar-white))',
+          charcoal: 'hsl(var(--charcoal))',
+          'light-gray': 'hsl(var(--light-gray))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        'siemens': '0.75rem', // 12px - Siemens-style rounded corners
+      },
+      spacing: {
+        // 8px grid system for Siemens design
+        'siemens-xs': '0.5rem', // 8px
+        'siemens-sm': '1rem', // 16px
+        'siemens-md': '1.5rem', // 24px
+        'siemens-lg': '2rem', // 32px
+        'siemens-xl': '3rem', // 48px
+        'siemens-2xl': '4rem', // 64px
       },
       keyframes: {
         'accordion-down': {
@@ -65,10 +84,25 @@ const config: Config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        'slide-up': {
+          from: { transform: 'translateY(20px)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' },
+        },
+        'slide-down': {
+          from: { transform: 'translateY(-20px)', opacity: '0' },
+          to: { transform: 'translateY(0)', opacity: '1' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in': 'fade-in 0.5s ease-out',
+        'slide-up': 'slide-up 0.5s ease-out',
+        'slide-down': 'slide-down 0.5s ease-out',
       },
     },
   },

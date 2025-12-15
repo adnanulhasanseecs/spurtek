@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'Spurtek' }],
   creator: 'Spurtek',
   publisher: 'Spurtek',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3010'),
   openGraph: {
     type: 'website',
     locale: 'en_US',

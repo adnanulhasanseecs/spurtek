@@ -1,14 +1,26 @@
+'use client';
+
 import Link from 'next/link';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
-import { generateMetadata } from '@/lib/metadata';
-import type { Metadata } from 'next';
+import { Input } from '@/components/ui/input';
+import { Search, ArrowRight } from 'lucide-react';
 
-export const metadata: Metadata = generateMetadata({
-  title: 'Products',
-  description: 'Explore our comprehensive range of industrial test systems and data acquisition solutions',
-});
+const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: 'easeOut' },
+};
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
 
 // Placeholder product data - will be replaced with Strapi CMS data in Phase 3
 const products = [
@@ -66,76 +78,130 @@ const categories = ['All', 'Data Acquisition', 'Test Systems', 'Analysis Tools',
 const industries = ['All', 'Aviation', 'Energy', 'Automotive', 'Manufacturing'];
 
 export default function ProductsPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedIndustry, setSelectedIndustry] = useState('All');
+
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+    const matchesIndustry = selectedIndustry === 'All' || product.industry.includes(selectedIndustry);
+    return matchesSearch && matchesCategory && matchesIndustry;
+  });
+
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight">Our Products</h1>
-        <p className="mt-4 text-lg text-muted-foreground">
+    <div className="container mx-auto px-4 py-16 md:py-24">
+      <motion.div
+        className="mb-12 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <h1 className="text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl">
+          Our Products
+        </h1>
+        <p className="mt-6 text-xl text-muted-foreground">
           Explore our comprehensive range of industrial test systems and data acquisition solutions
         </p>
-      </div>
+      </motion.div>
 
       {/* Filters */}
-      <div className="mb-8 flex flex-col gap-4 md:flex-row">
+      <motion.div
+        className="mb-12 flex flex-col gap-4 md:flex-row"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+      >
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+          <Input
             type="text"
             placeholder="Search products..."
-            className="w-full rounded-md border border-input bg-background px-10 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-11"
           />
         </div>
-        <div className="flex gap-2">
-          <select className="rounded-md border border-input bg-background px-4 py-2 text-sm">
+        <div className="flex gap-3">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="h-11 rounded-md border-2 border-input bg-background px-4 py-2.5 text-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          >
             <option>All Categories</option>
             {categories.slice(1).map((cat) => (
               <option key={cat}>{cat}</option>
             ))}
           </select>
-          <select className="rounded-md border border-input bg-background px-4 py-2 text-sm">
+          <select
+            value={selectedIndustry}
+            onChange={(e) => setSelectedIndustry(e.target.value)}
+            className="h-11 rounded-md border-2 border-input bg-background px-4 py-2.5 text-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          >
             <option>All Industries</option>
             {industries.slice(1).map((ind) => (
               <option key={ind}>{ind}</option>
             ))}
           </select>
         </div>
-      </div>
+      </motion.div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <Card key={product.id} className="flex flex-col">
-            <CardHeader>
-              <div className="mb-2 text-sm font-medium text-primary">{product.category}</div>
-              <CardTitle>{product.name}</CardTitle>
-              <CardDescription>{product.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col justify-between">
-              <div className="mb-4">
-                <div className="text-sm text-muted-foreground">Industries:</div>
-                <div className="mt-1 flex flex-wrap gap-2">
-                  {product.industry.map((ind) => (
-                    <span
-                      key={ind}
-                      className="rounded-full bg-muted px-2 py-1 text-xs font-medium"
-                    >
-                      {ind}
-                    </span>
-                  ))}
+      <motion.div
+        className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+      >
+        {filteredProducts.map((product, index) => (
+          <motion.div key={product.id} variants={fadeInUp}>
+            <Card className="flex h-full flex-col transition-all hover:border-primary/50">
+              <CardHeader>
+                <div className="mb-3 text-sm font-semibold text-primary">{product.category}</div>
+                <CardTitle className="text-2xl">{product.name}</CardTitle>
+                <CardDescription className="text-base mt-2">{product.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-1 flex-col justify-between">
+                <div className="mb-6">
+                  <div className="mb-2 text-sm font-medium text-muted-foreground">Industries:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {product.industry.map((ind) => (
+                      <span
+                        key={ind}
+                        className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+                      >
+                        {ind}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="flex gap-2">
-                <Button asChild className="flex-1">
-                  <Link href={`/products/${product.slug}`}>View Details</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/contact?type=quote">Quote</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                <div className="flex gap-3">
+                  <Button asChild className="flex-1 group">
+                    <Link href={`/products/${product.slug}`}>
+                      View Details
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline">
+                    <Link href="/contact?type=quote">Quote</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
+      
+      {filteredProducts.length === 0 && (
+        <motion.div
+          className="py-16 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <p className="text-lg text-muted-foreground">No products found matching your criteria.</p>
+        </motion.div>
+      )}
     </div>
   );
 }

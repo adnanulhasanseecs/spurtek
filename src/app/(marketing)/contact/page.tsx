@@ -2,9 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Mail, Phone, MapPin, Send, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
 
 const industries = [
   'Aviation',
@@ -81,232 +85,268 @@ export default function ContactPage() {
 
   if (submitted) {
     return (
-      <div className="container mx-auto px-4 py-12">
-        <Card className="mx-auto max-w-md">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center">
-              <CheckCircle2 className="mb-4 h-16 w-16 text-primary" />
-              <h2 className="mb-2 text-2xl font-bold">Thank You!</h2>
-              <p className="mb-6 text-muted-foreground">
-                We've received your message and will get back to you soon.
-              </p>
-              <Button asChild>
-                <Link href="/">Return Home</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="container mx-auto px-4 py-16 md:py-24">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card className="mx-auto max-w-md">
+            <CardContent className="pt-12 pb-12">
+              <div className="flex flex-col items-center text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
+                >
+                  <CheckCircle2 className="mb-6 h-20 w-20 text-primary" />
+                </motion.div>
+                <h2 className="mb-3 text-3xl font-bold">Thank You!</h2>
+                <p className="mb-8 text-lg text-muted-foreground">
+                  We've received your message and will get back to you soon.
+                </p>
+                <Button asChild size="lg" className="group">
+                  <Link href="/">
+                    Return Home
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tight">Contact Us</h1>
-        <p className="mt-4 text-lg text-muted-foreground">
+    <div className="container mx-auto px-4 py-16 md:py-24">
+      <motion.div
+        className="mb-12 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <h1 className="text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl">Contact Us</h1>
+        <p className="mt-6 text-xl text-muted-foreground">
           Get in touch with our team to discuss your requirements
         </p>
-      </div>
+      </motion.div>
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Contact Form */}
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-6 flex items-center justify-between">
                 {steps.map((step) => (
-                  <div key={step.id} className="flex items-center">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                  <div key={step.id} className="flex items-center flex-1">
+                    <motion.div
+                      className={`flex h-10 w-10 items-center justify-center rounded-full font-semibold transition-all ${
                         currentStep >= step.id
-                          ? 'bg-primary text-primary-foreground'
+                          ? 'bg-primary text-primary-foreground shadow-md'
                           : 'bg-muted text-muted-foreground'
                       }`}
+                      animate={{
+                        scale: currentStep === step.id ? 1.1 : 1,
+                      }}
+                      transition={{ type: 'spring', stiffness: 300 }}
                     >
                       {step.id}
-                    </div>
+                    </motion.div>
                     {step.id < steps.length && (
-                      <div
-                        className={`h-1 w-12 ${
-                          currentStep > step.id ? 'bg-primary' : 'bg-muted'
-                        }`}
-                      />
+                      <div className="flex-1 mx-2 h-1 bg-muted rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full bg-primary rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: currentStep > step.id ? '100%' : '0%' }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </div>
                     )}
                   </div>
                 ))}
               </div>
-              <CardTitle>{steps[currentStep - 1].name}</CardTitle>
-              <CardDescription>{steps[currentStep - 1].description}</CardDescription>
+              <CardTitle className="text-2xl">{steps[currentStep - 1].name}</CardTitle>
+              <CardDescription className="text-base mt-2">
+                {steps[currentStep - 1].description}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {currentStep === 1 && (
-                  <div className="space-y-4">
-                    <div>
-                      <label htmlFor="industry-select" className="mb-2 block text-sm font-medium">
-                        Industry
-                      </label>
-                      <select
-                        id="industry-select"
-                        name="industry"
-                        value={formData.industry}
-                        onChange={(e) => handleInputChange('industry', e.target.value)}
-                        className="w-full rounded-md border border-input bg-background px-4 py-2"
-                        required
-                      >
-                        <option value="">Select industry</option>
-                        {industries.map((ind) => (
-                          <option key={ind} value={ind}>
-                            {ind}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                )}
-
-                {currentStep === 2 && (
-                  <div className="space-y-4">
-                    <div>
-                      <label htmlFor="need-textarea" className="mb-2 block text-sm font-medium">
-                        What do you need help with?
-                      </label>
-                      <textarea
-                        id="need-textarea"
-                        name="need"
-                        value={formData.need}
-                        onChange={(e) => handleInputChange('need', e.target.value)}
-                        rows={4}
-                        className="w-full rounded-md border border-input bg-background px-4 py-2"
-                        placeholder="Describe your requirements..."
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="timeline-select" className="mb-2 block text-sm font-medium">
-                        Timeline
-                      </label>
-                      <select
-                        id="timeline-select"
-                        name="timeline"
-                        value={formData.timeline}
-                        onChange={(e) => handleInputChange('timeline', e.target.value)}
-                        className="w-full rounded-md border border-input bg-background px-4 py-2"
-                        required
-                      >
-                        <option value="">Select timeline</option>
-                        <option value="immediate">Immediate</option>
-                        <option value="1-3 months">1-3 months</option>
-                        <option value="3-6 months">3-6 months</option>
-                        <option value="6+ months">6+ months</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
-
-                {currentStep === 3 && (
-                  <div className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <AnimatePresence mode="wait">
+                  {currentStep === 1 && (
+                    <motion.div
+                      key="step1"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className="space-y-6"
+                    >
                       <div>
-                        <label htmlFor="firstName-input" className="mb-2 block text-sm font-medium">
-                          First Name
-                        </label>
-                        <input
-                          id="firstName-input"
-                          name="firstName"
-                          type="text"
-                          value={formData.firstName}
-                          onChange={(e) => handleInputChange('firstName', e.target.value)}
-                          className="w-full rounded-md border border-input bg-background px-4 py-2"
+                        <Label htmlFor="industry-select">Industry</Label>
+                        <select
+                          id="industry-select"
+                          name="industry"
+                          value={formData.industry}
+                          onChange={(e) => handleInputChange('industry', e.target.value)}
+                          className="mt-2 h-11 w-full rounded-md border-2 border-input bg-background px-4 py-2.5 text-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                           required
+                        >
+                          <option value="">Select industry</option>
+                          {industries.map((ind) => (
+                            <option key={ind} value={ind}>
+                              {ind}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {currentStep === 2 && (
+                    <motion.div
+                      key="step2"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className="space-y-6"
+                    >
+                      <div>
+                        <Label htmlFor="need-textarea">What do you need help with?</Label>
+                        <Textarea
+                          id="need-textarea"
+                          name="need"
+                          value={formData.need}
+                          onChange={(e) => handleInputChange('need', e.target.value)}
+                          rows={5}
+                          placeholder="Describe your requirements..."
+                          required
+                          className="mt-2"
                         />
                       </div>
                       <div>
-                        <label htmlFor="lastName-input" className="mb-2 block text-sm font-medium">
-                          Last Name
-                        </label>
-                        <input
-                          id="lastName-input"
-                          name="lastName"
-                          type="text"
-                          value={formData.lastName}
-                          onChange={(e) => handleInputChange('lastName', e.target.value)}
-                          className="w-full rounded-md border border-input bg-background px-4 py-2"
+                        <Label htmlFor="timeline-select">Timeline</Label>
+                        <select
+                          id="timeline-select"
+                          name="timeline"
+                          value={formData.timeline}
+                          onChange={(e) => handleInputChange('timeline', e.target.value)}
+                          className="mt-2 h-11 w-full rounded-md border-2 border-input bg-background px-4 py-2.5 text-sm transition-all hover:border-primary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                           required
+                        >
+                          <option value="">Select timeline</option>
+                          <option value="immediate">Immediate</option>
+                          <option value="1-3 months">1-3 months</option>
+                          <option value="3-6 months">3-6 months</option>
+                          <option value="6+ months">6+ months</option>
+                        </select>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {currentStep === 3 && (
+                    <motion.div
+                      key="step3"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className="space-y-6"
+                    >
+                      <div className="grid gap-6 sm:grid-cols-2">
+                        <div>
+                          <Label htmlFor="firstName-input">First Name</Label>
+                          <Input
+                            id="firstName-input"
+                            name="firstName"
+                            type="text"
+                            value={formData.firstName}
+                            onChange={(e) => handleInputChange('firstName', e.target.value)}
+                            required
+                            className="mt-2"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="lastName-input">Last Name</Label>
+                          <Input
+                            id="lastName-input"
+                            name="lastName"
+                            type="text"
+                            value={formData.lastName}
+                            onChange={(e) => handleInputChange('lastName', e.target.value)}
+                            required
+                            className="mt-2"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="email-input">Email</Label>
+                        <Input
+                          id="email-input"
+                          name="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          required
+                          className="mt-2"
                         />
                       </div>
-                    </div>
-                    <div>
-                      <label htmlFor="email-input" className="mb-2 block text-sm font-medium">
-                        Email
-                      </label>
-                      <input
-                        id="email-input"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => handleInputChange('email', e.target.value)}
-                        className="w-full rounded-md border border-input bg-background px-4 py-2"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="phone-input" className="mb-2 block text-sm font-medium">
-                        Phone
-                      </label>
-                      <input
-                        id="phone-input"
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="w-full rounded-md border border-input bg-background px-4 py-2"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="company-input" className="mb-2 block text-sm font-medium">
-                        Company
-                      </label>
-                      <input
-                        id="company-input"
-                        name="company"
-                        type="text"
-                        value={formData.company}
-                        onChange={(e) => handleInputChange('company', e.target.value)}
-                        className="w-full rounded-md border border-input bg-background px-4 py-2"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="message-textarea" className="mb-2 block text-sm font-medium">
-                        Message (Optional)
-                      </label>
-                      <textarea
-                        id="message-textarea"
-                        name="message"
-                        value={formData.message}
-                        onChange={(e) => handleInputChange('message', e.target.value)}
-                        rows={4}
-                        className="w-full rounded-md border border-input bg-background px-4 py-2"
-                      />
-                    </div>
-                  </div>
-                )}
+                      <div>
+                        <Label htmlFor="phone-input">Phone</Label>
+                        <Input
+                          id="phone-input"
+                          name="phone"
+                          type="tel"
+                          value={formData.phone}
+                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          className="mt-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="company-input">Company</Label>
+                        <Input
+                          id="company-input"
+                          name="company"
+                          type="text"
+                          value={formData.company}
+                          onChange={(e) => handleInputChange('company', e.target.value)}
+                          className="mt-2"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="message-textarea">Message (Optional)</Label>
+                        <Textarea
+                          id="message-textarea"
+                          name="message"
+                          value={formData.message}
+                          onChange={(e) => handleInputChange('message', e.target.value)}
+                          rows={4}
+                          className="mt-2"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-                <div className="flex justify-between">
+                <div className="flex justify-between pt-4">
                   {currentStep > 1 && (
-                    <Button type="button" variant="outline" onClick={handleBack}>
+                    <Button type="button" variant="outline" onClick={handleBack} className="group">
+                      <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
                       Back
                     </Button>
                   )}
-                  <div className="ml-auto">
+                  <div className={currentStep > 1 ? 'ml-auto' : 'ml-auto w-full'}>
                     {currentStep < 3 ? (
-                      <Button type="button" onClick={handleNext}>
+                      <Button type="button" onClick={handleNext} className="group w-full sm:w-auto">
                         Next
+                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </Button>
                     ) : (
-                      <Button type="submit">
-                        <Send className="mr-2 h-4 w-4" />
+                      <Button type="submit" size="lg" className="group w-full sm:w-auto">
+                        <Send className="mr-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                         Submit
                       </Button>
                     )}
@@ -318,42 +358,65 @@ export default function ContactPage() {
         </div>
 
         {/* Contact Information */}
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <Card>
             <CardHeader>
-              <CardTitle>Contact Information</CardTitle>
+              <CardTitle className="text-xl">Contact Information</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start gap-3">
-                <MapPin className="mt-1 h-5 w-5 text-primary" />
-                <div>
-                  <div className="font-medium">Address</div>
-                  <div className="text-sm text-muted-foreground">Pakistan</div>
+            <CardContent className="space-y-6">
+              <motion.div
+                className="flex items-start gap-4"
+                whileHover={{ x: 4 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                  <MapPin className="h-5 w-5 text-primary" />
                 </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Phone className="mt-1 h-5 w-5 text-primary" />
                 <div>
-                  <div className="font-medium">Phone</div>
-                  <div className="text-sm text-muted-foreground">+92 XXX XXXXXXX</div>
+                  <div className="font-semibold">Address</div>
+                  <div className="text-sm text-muted-foreground mt-1">Pakistan</div>
                 </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Mail className="mt-1 h-5 w-5 text-primary" />
+              </motion.div>
+              <motion.div
+                className="flex items-start gap-4"
+                whileHover={{ x: 4 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                  <Phone className="h-5 w-5 text-primary" />
+                </div>
                 <div>
-                  <div className="font-medium">Email</div>
-                  <div className="text-sm text-muted-foreground">info@spurtek.com.pk</div>
+                  <div className="font-semibold">Phone</div>
+                  <div className="text-sm text-muted-foreground mt-1">+92 XXX XXXXXXX</div>
                 </div>
-              </div>
+              </motion.div>
+              <motion.div
+                className="flex items-start gap-4"
+                whileHover={{ x: 4 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                  <Mail className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <div className="font-semibold">Email</div>
+                  <div className="text-sm text-muted-foreground mt-1">info@spurtek.com.pk</div>
+                </div>
+              </motion.div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Map</CardTitle>
+              <CardTitle className="text-xl">Map</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video rounded-lg bg-muted">
+              <div className="aspect-video rounded-lg bg-muted overflow-hidden">
                 {/* Google Maps embed will be added here */}
                 <div className="flex h-full items-center justify-center text-muted-foreground">
                   Map placeholder
@@ -361,7 +424,7 @@ export default function ContactPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

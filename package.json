@@ -4,9 +4,9 @@
   "description": "Spurtek - B2B Industrial Technology Website",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3002",
+    "dev": "next dev -p 3010",
     "build": "next build",
-    "start": "next start -p 3002",
+    "start": "next start -p 3010",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",

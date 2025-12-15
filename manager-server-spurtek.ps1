@@ -10,7 +10,7 @@ param(
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $ScriptDir
 
-$Port = 3002
+$Port = 3010
 $ProcessName = "node"
 $LogFile = "server.log"
 $PidFile = ".server.pid"
